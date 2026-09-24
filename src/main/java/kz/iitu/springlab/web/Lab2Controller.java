@@ -1,6 +1,7 @@
 package kz.iitu.springlab.web;
 
 import kz.iitu.springlab.notify.NotificationService;
+import kz.iitu.springlab.lifecycle.LifecycleDemo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -10,9 +11,12 @@ import java.util.*;
 public class Lab2Controller {
 
     private final NotificationService notifications;
+    private final LifecycleDemo lifecycle;
 
-    public Lab2Controller(NotificationService notifications) {
+    public Lab2Controller(NotificationService notifications,
+                          LifecycleDemo lifecycle) {
         this.notifications = notifications;
+        this.lifecycle = lifecycle;
     }
 
     @GetMapping("/notify")
@@ -25,5 +29,10 @@ public class Lab2Controller {
                 "all", notifications.viaAll(text),
                 "beanNames", notifications.names()
         );
+    }
+
+    @GetMapping("/lifecycle")
+    public List<String> lifecycle() {
+        return lifecycle.events();
     }
 }
