@@ -1,7 +1,8 @@
 package kz.iitu.springlab.web;
 
-import kz.iitu.springlab.notify.NotificationService;
 import kz.iitu.springlab.lifecycle.LifecycleDemo;
+import kz.iitu.springlab.notify.NotificationService;
+import kz.iitu.springlab.scope.TicketOffice;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -12,11 +13,14 @@ public class Lab2Controller {
 
     private final NotificationService notifications;
     private final LifecycleDemo lifecycle;
+    private final TicketOffice ticketOffice;
 
     public Lab2Controller(NotificationService notifications,
-                          LifecycleDemo lifecycle) {
+                          LifecycleDemo lifecycle,
+                          TicketOffice ticketOffice) {
         this.notifications = notifications;
         this.lifecycle = lifecycle;
+        this.ticketOffice = ticketOffice;
     }
 
     @GetMapping("/notify")
@@ -34,5 +38,10 @@ public class Lab2Controller {
     @GetMapping("/lifecycle")
     public List<String> lifecycle() {
         return lifecycle.events();
+    }
+
+    @GetMapping("/scopes")
+    public Map<String, Object> scopes() {
+        return ticketOffice.demo();
     }
 }
