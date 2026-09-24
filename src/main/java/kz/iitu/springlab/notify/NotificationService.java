@@ -10,15 +10,18 @@ public class NotificationService {
 
     private final Notifier primary;
     private final Notifier console;
+    private final Notifier reversed;
     private final List<Notifier> all;
     private final Map<String, Notifier> byName;
 
     public NotificationService(Notifier primary,
                                @Qualifier("console") Notifier console,
+                               @Qualifier("reversed") Notifier reversed,
                                List<Notifier> all,
                                Map<String, Notifier> byName) {
         this.primary = primary;
         this.console = console;
+        this.reversed = reversed;
         this.all = all;
         this.byName = byName;
     }
@@ -29,6 +32,10 @@ public class NotificationService {
 
     public String viaConsole(String message) {
         return console.send(message);
+    }
+
+    public String viaReversed(String message) {
+        return reversed.send(message);
     }
 
     public List<String> viaAll(String message) {
