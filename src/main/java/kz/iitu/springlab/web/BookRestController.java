@@ -1,6 +1,7 @@
 package kz.iitu.springlab.web;
 
 import kz.iitu.springlab.catalog.Book;
+import kz.iitu.springlab.catalog.BookNotFoundException;
 import kz.iitu.springlab.catalog.BookService;
 import kz.iitu.springlab.catalog.BookStats;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +32,8 @@ public class BookRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> find(@PathVariable long id) {
-        return service.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public Book find(@PathVariable long id) {
+        return service.findById(id);
     }
 
     @PostMapping
@@ -47,7 +46,9 @@ public class BookRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> replace(@PathVariable long id, @RequestBody Book book) {
-        if (service.findById(id).isEmpty()) {
+        try {
+            service.findById(id);  // проверим, что существует
+        } catch (BookNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }
         Book updated = service.create(new Book(id, book.title(), book.author(), book.year()));

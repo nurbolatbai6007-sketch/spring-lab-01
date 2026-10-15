@@ -23,8 +23,9 @@ public class BookService {
                 .toList();
     }
 
-    public Optional<Book> findById(Long id) {
-        return repository.findById(id);
+    public Book findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(id));
     }
 
     public Book create(Book book) {

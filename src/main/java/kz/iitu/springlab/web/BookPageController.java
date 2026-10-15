@@ -1,9 +1,11 @@
 package kz.iitu.springlab.web;
 
+import jakarta.validation.Valid;
 import kz.iitu.springlab.catalog.Book;
 import kz.iitu.springlab.catalog.BookService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -17,6 +19,19 @@ public class BookPageController {
         this.service = service;
     }
 
+    @GetMapping("/new")
+    public String newForm(Model model) {
+        model.addAttribute("form", new BookForm());
+        return "books/form";
+    }
+
+    @GetMapping("/{id}")
+    public String show(@PathVariable long id, Model model) {
+        Book book = service.findById(id);
+        model.addAttribute("book", book);
+        return "books/show";
+    }
+
     @GetMapping
     public String list(@RequestParam(required = false) String author, Model model) {
         model.addAttribute("books", service.findAll(author));
@@ -26,12 +41,17 @@ public class BookPageController {
     }
 
     @PostMapping
-    public String create(@RequestParam String title,
-                         @RequestParam String author,
-                         @RequestParam int year,
+    public String create(@Valid @ModelAttribute("form") BookForm form,
+                         BindingResult binding,
+                         Model model,
                          RedirectAttributes redirect) {
-        Book saved = service.create(new Book(null, title, author, year));
-        redirect.addFlashAttribute("message", "Book \"" + saved.title() + "\" has been added");
+        if (binding.hasErrors()) {
+            return "books/form";
+        }
+        Book saved = service.create(new Book(null, form.getTitle(),
+                form.getAuthor(), form.getYear()));
+        redirect.addFlashAttribute("message",
+                "Book \"" + saved.title() + "\" has been added");
         return "redirect:/books";
     }
 }
