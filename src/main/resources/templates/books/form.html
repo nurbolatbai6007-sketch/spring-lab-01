@@ -19,6 +19,9 @@
     <label th:text="#{book.title}">Title</label>
     <input type="text" th:field="*{title}" th:errorclass="is-invalid">
     <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+    <label th:text="#{book.price}">Price</label>
+    <input type="number" step="0.01" th:field="*{price}" th:errorclass="is-invalid">
+    <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
 
     <label th:text="#{book.author}">Author</label>
     <input type="text" th:field="*{author}" th:errorclass="is-invalid">

@@ -51,7 +51,7 @@ public class BookRestController {
         } catch (BookNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }
-        Book updated = service.create(new Book(id, book.title(), book.author(), book.year()));
+        Book updated = service.create(new Book(id, book.title(), book.author(), book.year(), book.price()));
         return ResponseEntity.ok(updated);
     }
 

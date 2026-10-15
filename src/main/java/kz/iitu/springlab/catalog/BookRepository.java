@@ -2,6 +2,7 @@ package kz.iitu.springlab.catalog;
 
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,9 +16,9 @@ public class BookRepository {
     private final AtomicLong sequence = new AtomicLong();
 
     public BookRepository() {
-        save(new Book(null, "Effective Java", "Joshua Bloch", 2018));
-        save(new Book(null, "Clean Code", "Robert Martin", 2008));
-        save(new Book(null, "Spring in Action", "Craig Walls", 2022));
+        save(new Book(null, "Effective Java", "Joshua Bloch", 2018, new BigDecimal("45.99")));
+        save(new Book(null, "Clean Code", "Robert Martin", 2008, new BigDecimal("39.50")));
+        save(new Book(null, "Spring in Action", "Craig Walls", 2022, new BigDecimal("49.00")));
     }
 
     public List<Book> findAll() {
@@ -30,7 +31,7 @@ public class BookRepository {
 
     public Book save(Book book) {
         long id = book.id() != null ? book.id() : sequence.incrementAndGet();
-        Book stored = new Book(id, book.title(), book.author(), book.year());
+        Book stored = new Book(id, book.title(), book.author(), book.year(), book.price());
         storage.put(id, stored);
         return stored;
     }
