@@ -1,5 +1,6 @@
 package kz.iitu.springlab.web;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import kz.iitu.springlab.catalog.Book;
 import kz.iitu.springlab.catalog.BookNotFoundException;
 import kz.iitu.springlab.catalog.BookService;
@@ -8,10 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 
+@Hidden // ← Прячем из Swagger
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping("/api/legacy-books")
 public class BookRestController {
 
     private final BookService service;
@@ -47,11 +50,11 @@ public class BookRestController {
     @PutMapping("/{id}")
     public ResponseEntity<Book> replace(@PathVariable long id, @RequestBody Book book) {
         try {
-            service.findById(id);  // проверим, что существует
+            service.findById(id);
         } catch (BookNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }
-        Book updated = service.create(new Book(id, book.title(), book.author(), book.year(), book.price()));
+        Book updated = service.create(new Book(id, book.title(), book.author(), book.year(), book.price(), Instant.now()));
         return ResponseEntity.ok(updated);
     }
 

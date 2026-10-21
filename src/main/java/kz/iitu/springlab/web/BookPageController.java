@@ -9,6 +9,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.Instant;
+
 @Controller
 @RequestMapping("/books")
 public class BookPageController {
@@ -48,8 +50,9 @@ public class BookPageController {
         if (binding.hasErrors()) {
             return "books/form";
         }
+        // ДОБАВЛЕН Instant.now()
         Book saved = service.create(new Book(null, form.getTitle(),
-                form.getAuthor(), form.getYear(), form.getPrice()));
+                form.getAuthor(), form.getYear(), form.getPrice(), Instant.now()));
         redirect.addFlashAttribute("message",
                 "Book \"" + saved.title() + "\" has been added");
         return "redirect:/books";

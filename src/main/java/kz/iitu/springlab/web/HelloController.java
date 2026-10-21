@@ -1,9 +1,11 @@
 package kz.iitu.springlab.web;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
+@Hidden // ← Прячем из Swagger
 @RestController
 @RequestMapping("/api")
 public class HelloController {

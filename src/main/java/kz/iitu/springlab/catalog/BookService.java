@@ -3,7 +3,6 @@ package kz.iitu.springlab.catalog;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookService {
@@ -29,6 +28,15 @@ public class BookService {
     }
 
     public Book create(Book book) {
+        // Проверяем дубликат только при создании новой книги (id == null)
+        if (book.id() == null) {
+            boolean exists = repository.findAll().stream()
+                    .anyMatch(b -> b.title().equalsIgnoreCase(book.title())
+                            && b.author().equalsIgnoreCase(book.author()));
+            if (exists) {
+                throw new DuplicateTitleException(book.title());
+            }
+        }
         return repository.save(book);
     }
 
