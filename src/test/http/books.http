@@ -1,0 +1,47 @@
+### 1. GET all books (200)
+GET http://localhost:8080/api/books
+
+### 2. GET one book, existing (200)
+GET http://localhost:8080/api/books/1
+
+### 3. GET one book, not found (404 after Task 3)
+GET http://localhost:8080/api/books/999
+
+### 4. POST create a book (201 + Location)
+POST http://localhost:8080/api/books
+Content-Type: application/json
+
+{
+  "title": "New Book",
+  "author": "John Doe",
+  "year": 2024,
+  "price": 29.99
+}
+
+### 5. POST with empty title (400 after Task 3)
+POST http://localhost:8080/api/books
+Content-Type: application/json
+
+{
+  "title": "",
+  "author": "John Doe",
+  "year": 2024,
+  "price": 29.99
+}
+
+### 6. PUT update a book (200)
+PUT http://localhost:8080/api/books/1
+Content-Type: application/json
+
+{
+  "title": "Effective Java 4th Edition",
+  "author": "Joshua Bloch",
+  "year": 2024,
+  "price": 49.99
+}
+
+### 7. DELETE a book (204)
+DELETE http://localhost:8080/api/books/1
+
+### 8. DELETE the same book again (404 after Task 3)
+DELETE http://localhost:8080/api/books/1
