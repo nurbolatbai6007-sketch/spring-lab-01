@@ -1,29 +1,31 @@
 package kz.iitu.springlab.web;
 
 import jakarta.validation.Valid;
-import kz.iitu.springlab.catalog.Book;
-import kz.iitu.springlab.catalog.BookService;
+import kz.iitu.springlab.catalog.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.Instant;
+import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/books")
 public class BookPageController {
 
     private final BookService service;
+    private final AuthorRepository authorRepository;
 
-    public BookPageController(BookService service) {
+    public BookPageController(BookService service, AuthorRepository authorRepository) {
         this.service = service;
+        this.authorRepository = authorRepository;
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("form", new BookForm());
+        model.addAttribute("authors", authorRepository.findAll());
         return "books/form";
     }
 
@@ -48,13 +50,27 @@ public class BookPageController {
                          Model model,
                          RedirectAttributes redirect) {
         if (binding.hasErrors()) {
+            model.addAttribute("authors", authorRepository.findAll());
             return "books/form";
         }
-        // ДОБАВЛЕН Instant.now()
-        Book saved = service.create(new Book(null, form.getTitle(),
-                form.getAuthor(), form.getYear(), form.getPrice(), Instant.now()));
+
+        Author author = authorRepository.findAll().stream()
+                .filter(a -> a.getName().equalsIgnoreCase(form.getAuthor()))
+                .findFirst()
+                .orElseThrow(() -> new AuthorNotFoundException(-1L));
+
+        Book book = new Book(
+                form.getTitle(),
+                Genre.NON_FICTION, // заглушка (форма не принимает genre)
+                form.getYear(),
+                form.getPrice() == null ? BigDecimal.ZERO : form.getPrice()
+        );
+        book.setAuthor(author);
+
+        Book saved = service.create(book);
+
         redirect.addFlashAttribute("message",
-                "Book \"" + saved.title() + "\" has been added");
+                "Book \"" + saved.getTitle() + "\" has been added");
         return "redirect:/books";
     }
 }

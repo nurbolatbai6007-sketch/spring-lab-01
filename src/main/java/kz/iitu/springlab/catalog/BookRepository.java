@@ -1,43 +1,36 @@
 package kz.iitu.springlab.catalog;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
-public class BookRepository {
+public interface BookRepository extends JpaRepository<Book, Long> {
 
-    private final Map<Long, Book> storage = new ConcurrentHashMap<>();
-    private final AtomicLong sequence = new AtomicLong();
+    // 5 derived queries
+    List<Book> findByGenre(Genre genre);
+    List<Book> findByTitleContainingIgnoreCase(String fragment);
+    List<Book> findByYearBetweenOrderByYearDesc(int from, int to);
+    List<Book> findTop3ByGenreOrderByYearDesc(Genre genre);
+    long countByAuthorName(String name);
 
-    public BookRepository() {
-        save(new Book(null, "Effective Java", "Joshua Bloch", 2018, new BigDecimal("45.99"), Instant.now()));
-        save(new Book(null, "Clean Code", "Robert Martin", 2008, new BigDecimal("39.50"), Instant.now()));
-        save(new Book(null, "Spring in Action", "Craig Walls", 2022, new BigDecimal("49.00"), Instant.now()));
-    }
+    // 2 @Query
+    @Query("select b from Book b where b.genre = :genre and b.year > :year order by b.title")
+    List<Book> search(@Param("genre") Genre genre, @Param("year") int year);
 
-    public List<Book> findAll() {
-        return List.copyOf(storage.values());
-    }
+    @Modifying(clearAutomatically = true)
+    @Query("update Book b set b.archived = true where b.year < :year")
+    int archiveOlderThan(@Param("year") int year);
 
-    public Optional<Book> findById(Long id) {
-        return Optional.ofNullable(storage.get(id));
-    }
+    // N+1 fix
+    @Query("select b from Book b join fetch b.author")
+    List<Book> findAllWithAuthor();
 
-    public Book save(Book book) {
-        long id = book.id() != null ? book.id() : sequence.incrementAndGet();
-        Book stored = new Book(id, book.title(), book.author(), book.year(), book.price(), book.createdAt());
-        storage.put(id, stored);
-        return stored;
-    }
-
-    public boolean deleteById(Long id) {
-        return storage.remove(id) != null;
-    }
+    // === Pagination (Task 4) ===
+    Page<Book> findAll(Pageable pageable);
+    Page<Book> findByGenre(Genre genre, Pageable pageable);
 }

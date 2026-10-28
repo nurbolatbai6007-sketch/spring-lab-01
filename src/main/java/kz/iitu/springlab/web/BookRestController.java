@@ -9,10 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.time.Instant;
 import java.util.List;
 
-@Hidden // ← Прячем из Swagger
+@Hidden
 @RestController
 @RequestMapping("/api/legacy-books")
 public class BookRestController {
@@ -43,19 +42,24 @@ public class BookRestController {
     public ResponseEntity<Book> create(@RequestBody Book book) {
         Book saved = service.create(book);
         return ResponseEntity
-                .created(URI.create("/api/books/" + saved.id()))
+                .created(URI.create("/api/legacy-books/" + saved.getId()))
                 .body(saved);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> replace(@PathVariable long id, @RequestBody Book book) {
         try {
-            service.findById(id);
+            Book existing = service.findById(id);
+            existing.setTitle(book.getTitle());
+            existing.setAuthor(book.getAuthor());
+            existing.setYear(book.getYear());
+            existing.setPrice(book.getPrice());
+
+            Book updated = service.create(existing);
+            return ResponseEntity.ok(updated);
         } catch (BookNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }
-        Book updated = service.create(new Book(id, book.title(), book.author(), book.year(), book.price(), Instant.now()));
-        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")

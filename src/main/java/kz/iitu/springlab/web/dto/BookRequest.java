@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import kz.iitu.springlab.web.validation.NoDigits;
 
 import java.math.BigDecimal;
 
@@ -16,9 +15,8 @@ public record BookRequest(
         @Size(max = 120, message = "{book.title.size}")
         String title,
 
-        @NotBlank(message = "{book.author.required}")
-        @NoDigits(message = "{book.author.nodigits}")
-        String author,
+        @NotNull(message = "{book.author.required}")
+        Long authorId,
 
         @Min(value = 1450, message = "{book.year.range}")
         @Max(value = 2100, message = "{book.year.range}")

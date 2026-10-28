@@ -1,39 +1,35 @@
 package kz.iitu.springlab.web.dto;
 
 import kz.iitu.springlab.catalog.Book;
+import kz.iitu.springlab.catalog.Genre;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.List;
 
 @Component
 public class BookMapper {
 
-    // Из запроса клиента в сущность (id и дата ставятся сервером)
     public Book toDomain(BookRequest request) {
         return new Book(
-                null,
                 request.title(),
-                request.author(),
+                Genre.NON_FICTION, // заглушка, пока клиент не передаёт genre
                 request.year(),
-                request.price(),
-                Instant.now()
+                request.price()
         );
     }
 
-    // Из сущности в ответ клиенту
     public BookResponse toResponse(Book book) {
+        String authorName = book.getAuthor() != null ? book.getAuthor().getName() : "Unknown";
         return new BookResponse(
-                book.id(),
-                book.title(),
-                book.author(),
-                book.year(),
-                book.price(),
-                book.createdAt()
+                book.getId(),
+                book.getTitle(),
+                authorName,
+                book.getYear(),
+                book.getPrice(),
+                book.getCreatedAt()
         );
     }
 
-    // Из списка сущностей в список ответов
     public List<BookResponse> toResponseList(List<Book> books) {
         return books.stream()
                 .map(this::toResponse)

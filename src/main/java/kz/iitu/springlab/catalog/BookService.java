@@ -1,5 +1,7 @@
 package kz.iitu.springlab.catalog;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +16,14 @@ public class BookService {
     }
 
     public List<Book> findAll(String author) {
+        List<Book> all = repository.findAll();
         if (author == null || author.isBlank()) {
-            return repository.findAll();
+            return all;
         }
-        return repository.findAll().stream()
-                .filter(b -> b.author().toLowerCase().contains(author.toLowerCase()))
+        return all.stream()
+                .filter(b -> b.getAuthor() != null
+                        && b.getAuthor().getName() != null
+                        && b.getAuthor().getName().toLowerCase().contains(author.toLowerCase()))
                 .toList();
     }
 
@@ -28,20 +33,23 @@ public class BookService {
     }
 
     public Book create(Book book) {
-        // Проверяем дубликат только при создании новой книги (id == null)
-        if (book.id() == null) {
+        if (book.getId() == null) {
             boolean exists = repository.findAll().stream()
-                    .anyMatch(b -> b.title().equalsIgnoreCase(book.title())
-                            && b.author().equalsIgnoreCase(book.author()));
+                    .anyMatch(b -> b.getTitle().equalsIgnoreCase(book.getTitle())
+                            && b.getAuthor() != null && book.getAuthor() != null
+                            && b.getAuthor().getName() != null && book.getAuthor().getName() != null
+                            && b.getAuthor().getName().equalsIgnoreCase(book.getAuthor().getName()));
             if (exists) {
-                throw new DuplicateTitleException(book.title());
+                throw new DuplicateTitleException(book.getTitle());
             }
         }
         return repository.save(book);
     }
 
     public boolean delete(Long id) {
-        return repository.deleteById(id);
+        if (!repository.existsById(id)) return false;
+        repository.deleteById(id);
+        return true;
     }
 
     public BookStats stats() {
@@ -49,8 +57,17 @@ public class BookService {
         if (all.isEmpty()) {
             return new BookStats(0, 0, 0);
         }
-        int earliest = all.stream().mapToInt(Book::year).min().orElse(0);
-        int latest   = all.stream().mapToInt(Book::year).max().orElse(0);
+        int earliest = all.stream().mapToInt(Book::getYear).min().orElse(0);
+        int latest   = all.stream().mapToInt(Book::getYear).max().orElse(0);
         return new BookStats(all.size(), earliest, latest);
+    }
+
+    // === Pagination (Task 4) ===
+    public Page<Book> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    public Page<Book> findByGenre(Genre genre, Pageable pageable) {
+        return repository.findByGenre(genre, pageable);
     }
 }
