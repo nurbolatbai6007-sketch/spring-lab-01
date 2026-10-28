@@ -59,11 +59,14 @@ public class BookPageController {
                 .findFirst()
                 .orElseThrow(() -> new AuthorNotFoundException(-1L));
 
+        BigDecimal priceAmount = form.getPrice() != null ? form.getPrice() : BigDecimal.ZERO;
+        Money price = new Money(priceAmount, "USD");
+
         Book book = new Book(
                 form.getTitle(),
-                Genre.NON_FICTION, // заглушка (форма не принимает genre)
+                Genre.NON_FICTION,
                 form.getYear(),
-                form.getPrice() == null ? BigDecimal.ZERO : form.getPrice()
+                price
         );
         book.setAuthor(author);
 

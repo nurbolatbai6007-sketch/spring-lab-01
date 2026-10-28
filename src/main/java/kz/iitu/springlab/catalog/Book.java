@@ -1,7 +1,6 @@
 package kz.iitu.springlab.catalog;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +22,9 @@ public class Book {
 
     private int year;
 
-    private BigDecimal price;
+    // === ИНДИВИДУАЛЬНОЕ ЗАДАНИЕ: @Embedded Money ===
+    @Embedded
+    private Money price;
 
     @Column(nullable = false)
     private boolean archived = false;
@@ -48,7 +49,7 @@ public class Book {
 
     protected Book() {}
 
-    public Book(String title, Genre genre, int year, BigDecimal price) {
+    public Book(String title, Genre genre, int year, Money price) {
         this.title = title;
         this.genre = genre;
         this.year = year;
@@ -64,8 +65,8 @@ public class Book {
     public void setGenre(Genre genre) { this.genre = genre; }
     public int getYear() { return year; }
     public void setYear(int year) { this.year = year; }
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public Money getPrice() { return price; }
+    public void setPrice(Money price) { this.price = price; }
     public boolean isArchived() { return archived; }
     public void setArchived(boolean archived) { this.archived = archived; }
     public Instant getCreatedAt() { return createdAt; }

@@ -52,8 +52,8 @@ public class DataSeeder implements CommandLineRunner {
         System.out.println("DataSeeder: inserted 3 authors, 8 books, 4 tags.");
     }
 
-    private void saveBook(String title, Genre genre, int year, String price, Author author, Set<Tag> tags) {
-        Book b = new Book(title, genre, year, new BigDecimal(price));
+    private void saveBook(String title, Genre genre, int year, String amount, Author author, Set<Tag> tags) {
+        Book b = new Book(title, genre, year, new Money(new BigDecimal(amount), "USD"));
         b.setAuthor(author);
         b.setTags(tags);
         bookRepository.save(b);

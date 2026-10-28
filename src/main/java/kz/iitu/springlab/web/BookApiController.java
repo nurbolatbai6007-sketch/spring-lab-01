@@ -33,7 +33,6 @@ public class BookApiController {
         this.authorRepository = authorRepository;
     }
 
-    // === PAGED LIST (Task 4) ===
     @GetMapping
     public Page<BookResponse> list(
             @RequestParam(required = false) Genre genre,
@@ -78,7 +77,10 @@ public class BookApiController {
         existing.setTitle(request.title());
         existing.setAuthor(author);
         existing.setYear(request.year());
-        existing.setPrice(request.price());
+        // request.price() — это BigDecimal, а setPrice ждёт Money. Оборачиваем:
+        if (request.price() != null) {
+            existing.setPrice(new Money(request.price(), "USD"));
+        }
 
         Book updated = service.create(existing);
         return mapper.toResponse(updated);
