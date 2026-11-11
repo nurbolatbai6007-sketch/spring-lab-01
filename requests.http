@@ -1,0 +1,29 @@
+### 1. Список всех книг
+GET http://localhost:8080/api/books
+
+### 2. Фильтр + лимит
+GET http://localhost:8080/api/books?author=Bloch&limit=1
+
+### 3. Одна книга
+GET http://localhost:8080/api/books/1
+
+### 4. Несуществующая книга
+GET http://localhost:8080/api/books/999
+
+### 5. Создание книги
+POST http://localhost:8080/api/books
+Content-Type: application/json
+
+{"title":"Pro Spring 6","author":"Cosmina","year":2023}
+
+### 6. Замена книги с id=1
+PUT http://localhost:8080/api/books/1
+Content-Type: application/json
+
+{"title":"Effective Java 4th","author":"Joshua Bloch","year":2024}
+
+### 7. Удаление id=2
+DELETE http://localhost:8080/api/books/2
+
+### 8. Повторное удаление id=2
+DELETE http://localhost:8080/api/books/2

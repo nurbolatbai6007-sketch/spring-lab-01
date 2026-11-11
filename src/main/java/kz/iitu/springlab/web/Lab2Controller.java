@@ -1,5 +1,6 @@
 package kz.iitu.springlab.web;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import kz.iitu.springlab.lifecycle.LifecycleDemo;
 import kz.iitu.springlab.notify.NotificationService;
 import kz.iitu.springlab.scope.TicketOffice;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@Hidden // ← Прячем из Swagger
 @RestController
 @RequestMapping("/api/lab2")
 public class Lab2Controller {
