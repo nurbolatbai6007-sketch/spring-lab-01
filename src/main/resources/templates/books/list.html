@@ -1,12 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title th:text="${title}">Catalogue</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
+
+<p>
+    Logged in as: <strong sec:authentication="name">anonymous</strong>
+    &mdash; roles:
+    <span sec:authentication="principal.authorities">[ROLE_ANONYMOUS]</span>
+</p>
+
 <h1 th:text="${title}">Catalogue</h1>
+
+<p>
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Administration</a>
+</p>
 
 <p th:if="${message}" class="flash" th:text="${message}"></p>
 
@@ -21,10 +33,15 @@
     <tr th:each="book : ${books}">
         <td th:text="${book.id}">1</td>
         <td th:text="${book.title}">Title</td>
-        <td th:text="${book.author}">Author</td>
+        <td th:text="${book.author != null ? book.author.name : '-'}">Author</td>
         <td th:text="${book.year}">2020</td>
-        <td th:text="${book.price}">0.00</td>
+        <td th:text="${book.price != null ? book.price.amount + ' ' + book.price.currency : '-'}">0</td>
     </tr>
 </table>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Log out</button>
+</form>
+
 </body>
 </html>

@@ -2,6 +2,7 @@ package kz.iitu.springlab.catalog;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class BookService {
         return repository.save(book);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public boolean delete(Long id) {
         if (!repository.existsById(id)) return false;
         repository.deleteById(id);
@@ -62,7 +64,6 @@ public class BookService {
         return new BookStats(all.size(), earliest, latest);
     }
 
-    // === Pagination (Task 4) ===
     public Page<Book> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
